@@ -1,11 +1,11 @@
 package jdbc;
-
+//--------------------------------------------------------------------------------------------------------------
 import java.sql.*;
 import java.util.HashMap;
-
+//--------------------------------------------------------------------------------------------------------------
 public class AdminService {
     public static HashMap<String, String> adminmap = new HashMap<>();
-
+    //--------------------------------------------------------------------------------------------------------------
     public boolean newsignin(String key){
         String query = "SELECT City FROM admin WHERE special_code = ?";
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -32,7 +32,7 @@ public class AdminService {
         }
         return false;
     }
-
+    //--------------------------------------------------------------------------------------------------------------
     public boolean isProductKeyValid(String productkey) {
         String query = "SELECT Special_Code FROM admin WHERE Special_Code = ? AND username IS NULL";
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -47,7 +47,7 @@ public class AdminService {
         }
         return false;
     }
-
+    //--------------------------------------------------------------------------------------------------------------
     public boolean login(String username, String password) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT password FROM admin WHERE username = ?";
@@ -78,7 +78,7 @@ public class AdminService {
         }
         return false;
     }
-
+    //--------------------------------------------------------------------------------------------------------------
     public boolean signup(String username, String password, String name, String email, String productKey) {
         if (isProductKeyValid(productKey)) {
 	        try (Connection conn = DatabaseConnection.getConnection()) {
@@ -105,60 +105,5 @@ public class AdminService {
             return false;
         }
     }
-
-    public void assignWorkers(String MW_name) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "UPDATE name FROM streets WHERE assigned_worker IS ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, MW_name);
-
-            stmt.executeUpdate();
-
-//            while (rs.next()) {
-//                String streetName = rs.getString("name");
-//                System.out.println("Unassigned street: " + streetName);
-//                // Logic to assign workers via email or UI
-//            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-    public void checkStreetLights() {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT street_name, id, status FROM street_lights WHERE status != 'WORKING'";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            while (rs.next()) {
-                String streetName = rs.getString("street_name");
-                int id = rs.getInt("id");
-                String status = rs.getString("status");
-
-                System.out.println("Issue detected: Street: " + streetName + ", Light ID: " + id + ", Status: " + status);
-                notifyMaintenanceWorker(streetName);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void notifyMaintenanceWorker(String streetName) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT email FROM maintenance_workers WHERE street_assigned = ?";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, streetName);
-
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                String email = rs.getString("email");
-                System.out.println("Notified worker via email: " + email);
-                // Add email notification logic here
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    */
+    //--------------------------------------------------------------------------------------------------------------
 }

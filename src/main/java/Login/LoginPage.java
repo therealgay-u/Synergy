@@ -27,17 +27,17 @@ public class LoginPage extends Application {
         title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         title.setFill(Color.DARKBLUE);
         title.setEffect(new DropShadow(2, Color.GRAY));
-
+        //--------------------------------------------------------------------------------------------------------------
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username");
         usernameField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
         usernameField.setMaxWidth(200);
-
+        //--------------------------------------------------------------------------------------------------------------
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
         passwordField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
         passwordField.setMaxWidth(200);
-
+        //--------------------------------------------------------------------------------------------------------------
         Button submitButton = new Button("Submit");
         submitButton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;");
 
@@ -64,7 +64,7 @@ public class LoginPage extends Application {
                 showError("Invalid Credentials!");
             }
         });
-
+        //--------------------------------------------------------------------------------------------------------------
         Button signUpButton = new Button("Sign Up");
         signUpButton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;");
         signUpButton.setOnMouseEntered(e -> signUpButton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
@@ -84,7 +84,7 @@ public class LoginPage extends Application {
                         "-fx-background-radius: 15;"
         );
         vbox.setMaxSize(300, 250);
-
+        //--------------------------------------------------------------------------------------------------------------
         signUpButton.setOnAction(e -> {
             vbox.getChildren().clear();
 
@@ -92,7 +92,7 @@ public class LoginPage extends Application {
             signUpTitle.setFont(Font.font("Arial", FontWeight.BOLD, 24));
             signUpTitle.setFill(Color.DARKBLUE);
             signUpTitle.setEffect(new DropShadow(2, Color.GRAY));
-
+            //--------------------------------------------------------------------------------------------------------------
             TextField specialKeyField = new TextField();
             specialKeyField.setPromptText("Special Key");
             specialKeyField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
@@ -117,12 +117,12 @@ public class LoginPage extends Application {
             signup_emailField.setPromptText("Email");
             signup_emailField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
             signup_emailField.setMaxWidth(200);
-
+            //--------------------------------------------------------------------------------------------------------------
             Button signup_SubmitButton = new Button("Submit");
             signup_SubmitButton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;");
             signup_SubmitButton.setOnMouseEntered(evt -> signup_SubmitButton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
             signup_SubmitButton.setOnMouseExited(evt -> signup_SubmitButton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
-
+            //--------------------------------------------------------------------------------------------------------------
             signup_SubmitButton.setOnAction(evt -> {
 
                 String specialKey = specialKeyField.getText();
@@ -156,7 +156,7 @@ public class LoginPage extends Application {
             });
             vbox.getChildren().addAll(signUpTitle, specialKeyField, signup_nameField, signup_usernameField, signup_passwordField, signup_emailField, signup_SubmitButton);
         });
-
+        //--------------------------------------------------------------------------------------------------------------
         StackPane stackPane = new StackPane(vbox);
         stackPane.setStyle("-fx-background-color: #f0f4f8;");
         stackPane.setAlignment(Pos.CENTER);
@@ -171,7 +171,7 @@ public class LoginPage extends Application {
         primaryStage.show();
 
     }
-
+    //--------------------------------------------------------------------------------------------------------------
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -179,8 +179,9 @@ public class LoginPage extends Application {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
+    //--------------------------------------------------------------------------------------------------------------
     public static void main(String[] args) {
         launch(args);
     }
+    //--------------------------------------------------------------------------------------------------------------
 }
