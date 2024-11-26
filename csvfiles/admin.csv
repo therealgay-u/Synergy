@@ -1,6 +1,6 @@
-City,Special_Code,Name,Username,Password,Email_Id
-Banglore,BA1000,Jivaj,Jiv#456,Jiv@456,Jiv456@gmail.com
-Chennai,CH1010,Null,Null,Null,Null
-Delhi,DL1001,Bhavika,Bhav#123,Bha@123,Bhav123@gmail.com
-Kolkata,KO0001,Null,Null,Null,Null
-Mumbai,MU1100,Null,Null,Null,Null
+city,special_code,name,userName,password,email_id
+banglore,BA1000,NULL,NULL,NULL,NULL
+chennai,CH1010,NULL,NULL,NULL,NULL
+delhi,DL1001,NULL,NULL,NULL,NULL
+kolkata,KO0001,NULL,NULL,NULL,NULL
+mumbai,MU1100,NULL,NULL,NULL,NULL
