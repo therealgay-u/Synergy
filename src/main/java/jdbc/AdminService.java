@@ -18,7 +18,7 @@ public class AdminService {
             }
             if (city != null) {
                 String createTableSQL = "CREATE TABLE IF NOT EXISTS `" + city + "` (" +
-                        "`"+city+"_dw_name` VARCHAR(75), " +
+                        "`"+city+"_mw_name` VARCHAR(75), " +
                         "`street` VARCHAR(100), " +
                         "`emailid` VARCHAR(100))";
 

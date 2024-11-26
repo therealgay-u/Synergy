@@ -28,11 +28,14 @@ public class LoginPage extends Application {
         title.setFill(Color.DARKBLUE);
         title.setEffect(new DropShadow(2, Color.GRAY));
         //--------------------------------------------------------------------------------------------------------------
+        Label usernamelbl =  new Label("Enter Username:                                ");
+        usernamelbl.setAlignment(Pos.BOTTOM_CENTER);
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username");
         usernameField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
         usernameField.setMaxWidth(200);
         //--------------------------------------------------------------------------------------------------------------
+        Label passwordlbl =  new Label("Enter Password:                                  ");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
         passwordField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
@@ -73,16 +76,10 @@ public class LoginPage extends Application {
         HBox buttonBox = new HBox(10, submitButton, signUpButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox vbox = new VBox(15, title, usernameField, passwordField, buttonBox);
+        VBox vbox = new VBox(15, title, usernamelbl, usernameField, passwordlbl, passwordField, buttonBox);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(20));
-        vbox.setStyle(
-                "-fx-background-color: #ffffff; " +
-                        "-fx-border-color: #000000; " +
-                        "-fx-border-width: 2; " +
-                        "-fx-border-radius: 15; " +
-                        "-fx-background-radius: 15;"
-        );
+        vbox.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-width: 2; -fx-border-radius: 15; -fx-background-radius: 15;");
         vbox.setMaxSize(300, 250);
         //--------------------------------------------------------------------------------------------------------------
         signUpButton.setOnAction(e -> {
@@ -93,26 +90,31 @@ public class LoginPage extends Application {
             signUpTitle.setFill(Color.DARKBLUE);
             signUpTitle.setEffect(new DropShadow(2, Color.GRAY));
             //--------------------------------------------------------------------------------------------------------------
+            Label specialKeylbl =  new Label("Enter Special key:                             ");
             TextField specialKeyField = new TextField();
             specialKeyField.setPromptText("Special Key");
             specialKeyField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
             specialKeyField.setMaxWidth(200);
 
+            Label signup_namelbl =  new Label("Enter Name:                                     ");
             TextField signup_nameField = new TextField();
             signup_nameField.setPromptText("Name");
             signup_nameField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
             signup_nameField.setMaxWidth(200);
 
+            Label signup_usernamelbl =  new Label("Enter Username:                                ");
             TextField signup_usernameField = new TextField();
             signup_usernameField.setPromptText("Username");
             signup_usernameField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
             signup_usernameField.setMaxWidth(200);
 
+            Label signup_passwordlbl =  new Label("Enter Password:                                 ");
             PasswordField signup_passwordField = new PasswordField();
             signup_passwordField.setPromptText("Password");
             signup_passwordField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
             signup_passwordField.setMaxWidth(200);
 
+            Label signup_emaillbl =  new Label("Enter Email:                                       ");
             TextField signup_emailField = new TextField();
             signup_emailField.setPromptText("Email");
             signup_emailField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
@@ -133,7 +135,8 @@ public class LoginPage extends Application {
 
                 if (specialKey.isEmpty() || name.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
                     showError("Please fill in all fields.");
-                } else {
+                }
+                else {
                     if (admin.signup(username, password, name, email, specialKey)) {
                         Alert success = new Alert(Alert.AlertType.INFORMATION);
                         success.setTitle("Sign Up Successful");
@@ -154,7 +157,8 @@ public class LoginPage extends Application {
                     }
                 }
             });
-            vbox.getChildren().addAll(signUpTitle, specialKeyField, signup_nameField, signup_usernameField, signup_passwordField, signup_emailField, signup_SubmitButton);
+
+            vbox.getChildren().addAll(signUpTitle, specialKeylbl, specialKeyField, signup_namelbl, signup_nameField, signup_usernamelbl, signup_usernameField, signup_passwordlbl, signup_passwordField, signup_emaillbl, signup_emailField, signup_SubmitButton);
         });
         //--------------------------------------------------------------------------------------------------------------
         StackPane stackPane = new StackPane(vbox);
@@ -168,6 +172,7 @@ public class LoginPage extends Application {
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(400);
         primaryStage.setMinHeight(300);
+        primaryStage.setMaximized(true);
         primaryStage.show();
 
     }

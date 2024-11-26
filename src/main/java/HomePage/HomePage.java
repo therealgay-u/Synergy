@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jdbc.AdminService;
@@ -100,9 +102,13 @@ public class HomePage extends Application {
     private ObservableList<HomePage.TableRow> getTableDataForTable(String tableName) {
         ObservableList<HomePage.TableRow> tableData = FXCollections.observableArrayList();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query =  "SELECT * FROM " + tableName +" ORDER BY status ASC";
+            if (tableName.equalsIgnoreCase(AdminService.adminmap.get("city"))){
+                query =  "SELECT * FROM " + tableName;
+            }
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
 
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -122,7 +128,7 @@ public class HomePage extends Application {
                 }
                 tableData.add(new HomePage.TableRow(rowData));
             }
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -152,9 +158,13 @@ public class HomePage extends Application {
         //--------------------------------------------------------------------------------------------------------------
         Tab profileTab = new Tab("Profile");
         Label cityLabel = new Label("City: " + AdminService.adminmap.get("city"));
+        cityLabel.setFont(Font.font("SansSerif", 25));
         Label usernameLabel = new Label("Username: " + AdminService.adminmap.get("username"));
+        usernameLabel.setFont(Font.font("SansSerif", 25));
         Label nameLabel = new Label("Name: " + AdminService.adminmap.get("name"));
+        nameLabel.setFont(Font.font("SansSerif", 25));
         Label emailLabel = new Label("Email: " + AdminService.adminmap.get("email_id"));
+        emailLabel.setFont(Font.font("SansSerif", 25));
         //--------------------------------------------------------------------------------------------------------------
         Button logOutButton = new Button("Log Out");
         logOutButton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;");
@@ -176,7 +186,7 @@ public class HomePage extends Application {
         });
 
         VBox profileBox = new VBox(10, cityLabel, nameLabel, usernameLabel, emailLabel, logOutButton);
-        profileBox.setStyle("-fx-padding: 20; -fx-alignment: center-left; -fx-font-size: 14px;");
+        profileBox.setStyle("-fx-padding: 20; -fx-alignment: center; -fx-font-size: 14px;");
         profileTab.setContent(profileBox);
         setTabStyle(profileTab);
         //--------------------------------------------------------------------------------------------------------------
@@ -195,10 +205,14 @@ public class HomePage extends Application {
         refreshButton.setOnAction(event -> {
             String selectedTable = tableDropdown.getValue();
             if (selectedTable != null && !selectedTable.isEmpty()) {
+                ObservableList<String> updatedTableNames = getTableNamesFromDatabase();
+                tableDropdown.setItems(updatedTableNames);
                 ObservableList<HomePage.TableRow> refreshedData = getTableDataForTable(selectedTable);
                 tableView.setItems(refreshedData);
                 selectedTableLabel.setText("Table Details: Refreshed data for " + selectedTable);
             } else {
+                tableView.getItems().clear();
+                selectedTableLabel.setText("Table Details: No table selected.");
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setContentText("No table selected. Please select a table to refresh.");
                 alert.showAndWait();
@@ -217,18 +231,19 @@ public class HomePage extends Application {
             if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
                 Stage popupStage = new Stage();
                 popupStage.setTitle("Update value");
-
-                TextField streetnumfield = new TextField();
-                streetnumfield.setPromptText("Enter street number");
+                Label stnamelbl =  new Label("Enter street name");
+                TextField streetnamefield = new TextField();
+                streetnamefield.setPromptText("Enter street name");
+                Label newnamelbl =  new Label("Enter new name");
                 TextField newnamefield = new TextField();
                 newnamefield.setPromptText("Enter new name");
 
                 Button updatebtn = new Button("Update");
                 updatebtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
                 updatebtn.setOnAction(submitEvent -> {
-                    String streetnum = streetnumfield.getText();
+                    String streetname = streetnamefield.getText();
                     String newname = newnamefield.getText();
-                    if (update.update_mg(streetnum , newname)){
+                    if (update.update_mg(streetname , newname)){
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setHeaderText(null);
                         alert.setContentText("Value update!");
@@ -242,14 +257,14 @@ public class HomePage extends Application {
                     }
                     popupStage.close();
                 });
-                VBox popupContent = new VBox(10, streetnumfield , newnamefield, updatebtn);
+                VBox popupContent = new VBox(10, stnamelbl,streetnamefield ,newnamelbl, newnamefield, updatebtn);
                 popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
                 Scene popupScene = new Scene(popupContent, 300, 200);
                 popupStage.setScene(popupScene);
                 popupStage.show();
             }
             else{
-                if (update.steet_status(selectedTable)){
+                if (update.street_status(selectedTable)){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText(null);
                     alert.setContentText("Mails sent!");
@@ -264,28 +279,206 @@ public class HomePage extends Application {
             }
         });
 
+        Button addbutton = new Button("add new street");
+        addbutton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        addbutton.setVisible(false);
+        addbutton.setOnMouseEntered(e -> addbutton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+        addbutton.setOnMouseExited(e -> addbutton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+
+        addbutton.setOnAction(event -> {
+            String selectedTable = tableDropdown.getValue();
+            update_tables update =  new update_tables();
+            if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Add street");
+
+                Label newmgnamelbl =  new Label("Enter mw name");
+                TextField newmgnamefield = new TextField();
+                newmgnamefield.setPromptText("Enter mw name");
+
+                Label newstreetnamelbl =  new Label("Enter street name");
+                TextField newstreetnamefield = new TextField();
+                newstreetnamefield.setPromptText("Enter street name");
+
+                Button addstreetbtn = new Button("Update");
+                addstreetbtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+                addstreetbtn.setOnMouseEntered(e -> addstreetbtn.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+                addstreetbtn.setOnMouseExited(e -> addstreetbtn.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+                addstreetbtn.setOnAction(submitEvent -> {
+                    String newmgname = newmgnamefield.getText();
+                    String newstreetname = newstreetnamefield.getText();
+                    if (update.addstreet(newmgname , newstreetname)){
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Street added!");
+                        alert.showAndWait();
+                    }
+                    else{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Error updating value");
+                        alert.showAndWait();
+                    }
+                    popupStage.close();
+                });
+                VBox popupContent = new VBox(10, newmgnamelbl,newmgnamefield ,newstreetnamelbl, newstreetnamefield, addstreetbtn);
+                popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
+                Scene popupScene = new Scene(popupContent, 300, 200);
+                popupStage.setScene(popupScene);
+                popupStage.show();
+            }
+            else{
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Add new street light");
+
+                Label idlbl =  new Label("Enter id");
+                TextField idfield = new TextField();
+                idfield.setPromptText("Enter id");
+
+                Button addstreetlightbtn = new Button("Add");
+                addstreetlightbtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+                addstreetlightbtn.setOnMouseEntered(e -> addstreetlightbtn.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+                addstreetlightbtn.setOnMouseExited(e -> addstreetlightbtn.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+                addstreetlightbtn.setOnAction(submitEvent -> {
+                    String id = idfield.getText();
+                    if (update.addstreetlight(selectedTable, id)){
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("New street light added!");
+                        alert.showAndWait();
+                    }
+                    else{
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Error adding new street light");
+                        alert.showAndWait();
+                    }
+                    popupStage.close();
+                });
+                VBox popupContent = new VBox(10, idlbl,idfield, addstreetlightbtn);
+                popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
+                Scene popupScene = new Scene(popupContent, 300, 200);
+                popupStage.setScene(popupScene);
+                popupStage.show();
+            }
+        });
+
+        Button deletebutton = new Button("delete");
+        deletebutton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        deletebutton.setVisible(false);
+        deletebutton.setOnMouseEntered(e -> deletebutton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+        deletebutton.setOnMouseExited(e -> deletebutton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+
+        deletebutton.setOnAction(event -> {
+            String selectedTable = tableDropdown.getValue();
+            update_tables update =  new update_tables();
+            if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Delete street");
+
+                Label deletestreetlbl =  new Label("Enter street name");
+                TextField deletestreetfield = new TextField();
+                deletestreetfield.setPromptText("Enter street name");
+
+                Button deletebtn = new Button("delete");
+                deletebtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+                deletebtn.setOnMouseEntered(e -> deletebtn.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+                deletebtn.setOnMouseExited(e -> deletebtn.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+                deletebtn.setOnAction(submitEvent -> {
+                    String deletestreetname = deletestreetfield.getText();
+                    if (update.deletestreet(deletestreetname)){
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Street deleted!");
+                        alert.showAndWait();
+                    }
+                    else{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Error deleting table");
+                        alert.showAndWait();
+                    }
+                    popupStage.close();
+                });
+                VBox popupContent = new VBox(10, deletestreetlbl,deletestreetfield ,deletebtn);
+                popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
+                Scene popupScene = new Scene(popupContent, 300, 200);
+                popupStage.setScene(popupScene);
+                popupStage.show();
+            }
+            else{
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Delete street light");
+
+                Label deletestreetlightlbl =  new Label("Enter street light id");
+                TextField deletestreetlightfield = new TextField();
+                deletestreetlightfield.setPromptText("Enter street light id");
+
+                Button deletebtn = new Button("Delete");
+                deletebtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+                deletebtn.setOnMouseEntered(e -> deletebtn.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+                deletebtn.setOnMouseExited(e -> deletebtn.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+                deletebtn.setOnAction(submitEvent -> {
+                    String id = deletestreetlightfield.getText();
+                    if (update.deletestreetlight(selectedTable, id)){
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Street light deleted!");
+                        alert.showAndWait();
+                    }
+                    else{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Error deleting street light");
+                        alert.showAndWait();
+                    }
+                    popupStage.close();
+                });
+                VBox popupContent = new VBox(10, deletestreetlightlbl,deletestreetlightfield ,deletebtn);
+                popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
+                Scene popupScene = new Scene(popupContent, 300, 200);
+                popupStage.setScene(popupScene);
+                popupStage.show();
+            }
+        });
+
+
         tableDropdown.setOnAction(event -> {
             String selectedTable = tableDropdown.getValue();
             if (selectedTable != null) {
                 selectedTableLabel.setText("Table Details: Showing data for " + selectedTable);
                 updateButton.setVisible(true);
+                addbutton.setVisible(true);
+                deletebutton.setVisible(true);
                 if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
                     updateButton.setText("Update mw");
+                    addbutton.setText("Add street");
+                    deletebutton.setText("Delete street");
                 }
                 else{
                     updateButton.setText("Send action mail");
+                    addbutton.setText("Add new street light");
+                    deletebutton.setText("Delete street light");
                 }
                 ObservableList<HomePage.TableRow> tableData = getTableDataForTable(selectedTable);
                 tableView.setItems(tableData);
             } else {
                 updateButton.setVisible(false);
+                addbutton.setVisible(false);
+                deletebutton.setVisible(false);
             }
         });
 
         ObservableList<String> tableNames = getTableNamesFromDatabase();
         tableDropdown.setItems(tableNames);
 
-        HBox dropdownAndButton = new HBox(10, tableDropdown, refreshButton, updateButton);
+        HBox dropdownAndButton = new HBox(10, tableDropdown, refreshButton, updateButton, addbutton, deletebutton);
         dropdownAndButton.setStyle("-fx-alignment: center-left;");
 
         tableView = new TableView<>();
@@ -311,6 +504,10 @@ public class HomePage extends Application {
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Home Page");
+        primaryStage.setResizable(true);
+        primaryStage.setMinWidth(400);
+        primaryStage.setMinHeight(300);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }
