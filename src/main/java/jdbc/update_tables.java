@@ -6,6 +6,8 @@ public class update_tables {
 
     String city =  AdminService.adminmap.get("city");
 
+    //----------------------------------------------------------------------------------------------------------------------
+
     public boolean update_mg(String streetname , String newname){
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "UPDATE "+ city +" SET "+city+"_mw_name = ? WHERE Street = '"+ streetname +"'";
@@ -49,6 +51,8 @@ public class update_tables {
         return false;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------
+
     public boolean addstreet(String mgname, String streetname){
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "INSERT INTO "+city+" ("+city+"_mw_name, Street, emailid) VALUES (?, ?, ?)";
@@ -88,6 +92,8 @@ public class update_tables {
         }
         return false;
     }
+
+    //----------------------------------------------------------------------------------------------------------------------
 
     public boolean deletestreetlight(String tablename, String id){
         String sql = "DELETE FROM "+tablename+" WHERE id = ?";
@@ -131,5 +137,26 @@ public class update_tables {
             e.printStackTrace();
         }
     }
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    public boolean editprofile(String name, String username, String password, String email){
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "UPDATE admin SET name = ? , userName =  ? , password =  ? , email_id =  ? WHERE city  =  '"+city+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, name);
+            pstmt.setString(2, username);
+            pstmt.setString(3, password);
+            pstmt.setString(4, email);
+            pstmt.executeUpdate();
+            return true;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------
 
 }

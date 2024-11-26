@@ -29,6 +29,7 @@ public class HomePage extends Application {
     private ComboBox<String> tableDropdown;
     private Label selectedTableLabel;
     private TableView<HomePage.TableRow> tableView;
+    update_tables update =  new update_tables();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -185,7 +186,65 @@ public class HomePage extends Application {
             }
         });
 
-        VBox profileBox = new VBox(10, cityLabel, nameLabel, usernameLabel, emailLabel, logOutButton);
+        Button editbutton = new Button("Perform update");
+        editbutton.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white; -fx-padding: 5 10;");
+        editbutton.setVisible(false);
+        editbutton.setOnMouseEntered(e -> editbutton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+        editbutton.setOnMouseExited(e -> editbutton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
+        editbutton.setOnAction(event -> {
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Edit profile");
+
+            Label newnamelbl =  new Label("Enter new name");
+            TextField newnamefield = new TextField();
+            newnamefield.setPromptText("Enter new name");
+
+            Label newusernamelbl =  new Label("Enter new username");
+            TextField newusernamefield = new TextField();
+            newusernamefield.setPromptText("Enter new username");
+
+            Label newpasswordlbl =  new Label("Enter new parword");
+            TextField newpasswordfield = new TextField();
+            newpasswordfield.setPromptText("Enter new parword");
+
+            Label newemaillbl =  new Label("Enter new email");
+            TextField newemailfield = new TextField();
+            newemailfield.setPromptText("Enter new email");
+
+            Button updatebtn = new Button("Update");
+            updatebtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+            updatebtn.setOnAction(submitEvent -> {
+
+                String newname = newnamefield.getText();
+                String newusername = newusernamefield.getText();
+                String newpassword = newpasswordfield.getText();
+                String newemail = newemailfield.getText();
+                if (update.editprofile(newname, newusername, newpassword, newemail)){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Profile details update!");
+                    alert.showAndWait();
+                }
+                else{
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Error updating value");
+                    alert.showAndWait();
+                }
+                popupStage.close();
+            });
+            VBox popupContent = new VBox(10, newnamelbl, newnamefield ,newusernamelbl, newusernamefield, newpasswordlbl, newpasswordfield ,newemaillbl, newemailfield, updatebtn);
+            popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
+            Scene popupScene = new Scene(popupContent, 300, 200);
+            popupStage.setScene(popupScene);
+            popupStage.show();
+        });
+
+        HBox logouteditbox = new HBox(10, logOutButton,editbutton);
+        logouteditbox.setStyle("-fx-alignment: center;");
+
+        VBox profileBox = new VBox(10, cityLabel, nameLabel, usernameLabel, emailLabel, logouteditbox);
         profileBox.setStyle("-fx-padding: 20; -fx-alignment: center; -fx-font-size: 14px;");
         profileTab.setContent(profileBox);
         setTabStyle(profileTab);
@@ -227,7 +286,6 @@ public class HomePage extends Application {
 
         updateButton.setOnAction(event -> {
             String selectedTable = tableDropdown.getValue();
-            update_tables update =  new update_tables();
             if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
                 Stage popupStage = new Stage();
                 popupStage.setTitle("Update value");
@@ -288,7 +346,6 @@ public class HomePage extends Application {
 
         addbutton.setOnAction(event -> {
             String selectedTable = tableDropdown.getValue();
-            update_tables update =  new update_tables();
             if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
                 Stage popupStage = new Stage();
                 popupStage.setTitle("Add street");
@@ -375,7 +432,6 @@ public class HomePage extends Application {
 
         deletebutton.setOnAction(event -> {
             String selectedTable = tableDropdown.getValue();
-            update_tables update =  new update_tables();
             if (selectedTable.equalsIgnoreCase(AdminService.adminmap.get("city"))){
                 Stage popupStage = new Stage();
                 popupStage.setTitle("Delete street");
