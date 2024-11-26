@@ -177,6 +177,7 @@ public class HomePage extends Application {
             Stage stage = (Stage) logOutButton.getScene().getWindow();
             LoginPage loginPage = new LoginPage();
             try {
+                stage.setMaximized(true);
                 loginPage.start(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -186,9 +187,8 @@ public class HomePage extends Application {
             }
         });
 
-        Button editbutton = new Button("Perform update");
+        Button editbutton = new Button("Edit profile");
         editbutton.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white; -fx-padding: 5 10;");
-        editbutton.setVisible(false);
         editbutton.setOnMouseEntered(e -> editbutton.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
         editbutton.setOnMouseExited(e -> editbutton.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
 
@@ -199,44 +199,79 @@ public class HomePage extends Application {
             Label newnamelbl =  new Label("Enter new name");
             TextField newnamefield = new TextField();
             newnamefield.setPromptText("Enter new name");
+            newnamefield.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
+            newnamefield.setMaxWidth(200);
 
             Label newusernamelbl =  new Label("Enter new username");
             TextField newusernamefield = new TextField();
             newusernamefield.setPromptText("Enter new username");
+            newusernamefield.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
+            newusernamefield.setMaxWidth(200);
 
             Label newpasswordlbl =  new Label("Enter new parword");
-            TextField newpasswordfield = new TextField();
+            PasswordField newpasswordfield = new PasswordField();
             newpasswordfield.setPromptText("Enter new parword");
+            newpasswordfield.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
+            newpasswordfield.setMaxWidth(200);
+
+            Label confirmnewpasswordlbl =  new Label("Enter new parword");
+            PasswordField confirmnewpasswordfield = new PasswordField();
+            confirmnewpasswordfield.setPromptText("Enter new parword");
+            confirmnewpasswordfield.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
+            confirmnewpasswordfield.setMaxWidth(200);
 
             Label newemaillbl =  new Label("Enter new email");
             TextField newemailfield = new TextField();
             newemailfield.setPromptText("Enter new email");
+            newemailfield.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
+            newemailfield.setMaxWidth(200);
 
             Button updatebtn = new Button("Update");
             updatebtn.setStyle("-fx-background-color: #0078D7; -fx-text-fill: white;");
+            updatebtn.setOnMouseEntered(e -> updatebtn.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+            updatebtn.setOnMouseExited(e -> updatebtn.setStyle("-fx-background-color: #ffffff; -fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"));
+
             updatebtn.setOnAction(submitEvent -> {
 
                 String newname = newnamefield.getText();
                 String newusername = newusernamefield.getText();
                 String newpassword = newpasswordfield.getText();
+                String cnfnewpassword = confirmnewpasswordfield.getText();
                 String newemail = newemailfield.getText();
-                if (update.editprofile(newname, newusername, newpassword, newemail)){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText(null);
-                    alert.setContentText("Profile details update!");
-                    alert.showAndWait();
+                if (cnfnewpassword.equals(newpassword)){
+                    if (update.editprofile(newname, newusername, newpassword, newemail)){
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Profile details update!");
+                        alert.showAndWait();
+                        popupStage.close();
+
+                        AdminService.adminmap.clear();
+                        Stage stage = (Stage) logOutButton.getScene().getWindow();
+                        LoginPage loginPage = new LoginPage();
+                        try {
+                            loginPage.start(stage);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            Alert alertlogin = new Alert(Alert.AlertType.ERROR);
+                            alertlogin.setContentText("Failed to load Login Page.");
+                            alertlogin.showAndWait();
+                        }
+                    }
                 }
                 else{
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText(null);
-                    alert.setContentText("Error updating value");
+                    alert.setContentText("Error updating details");
                     alert.showAndWait();
                 }
                 popupStage.close();
             });
-            VBox popupContent = new VBox(10, newnamelbl, newnamefield ,newusernamelbl, newusernamefield, newpasswordlbl, newpasswordfield ,newemaillbl, newemailfield, updatebtn);
+
+            VBox popupContent = new VBox(10, newnamelbl, newnamefield ,newusernamelbl, newusernamefield, newpasswordlbl, newpasswordfield , confirmnewpasswordlbl, confirmnewpasswordfield, newemaillbl, newemailfield, updatebtn);
             popupContent.setStyle("-fx-padding: 20; -fx-alignment: center;");
-            Scene popupScene = new Scene(popupContent, 300, 200);
+
+            Scene popupScene = new Scene(popupContent, 400, 450);
             popupStage.setScene(popupScene);
             popupStage.show();
         });
@@ -557,7 +592,7 @@ public class HomePage extends Application {
 
         tabPane.prefWidthProperty().bind(primaryStage.widthProperty());
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Home Page");
         primaryStage.setResizable(true);

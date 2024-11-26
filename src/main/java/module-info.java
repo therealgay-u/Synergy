@@ -18,6 +18,4 @@ module Synergy_GUI {
     exports HomePage;
     opens HomePage to javafx.fxml;
 
-    exports tests;
-    opens tests to javafx.fxml;
 }

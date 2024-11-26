@@ -29,7 +29,6 @@ public class LoginPage extends Application {
         title.setEffect(new DropShadow(2, Color.GRAY));
         //--------------------------------------------------------------------------------------------------------------
         Label usernamelbl =  new Label("Enter Username:                                ");
-        usernamelbl.setAlignment(Pos.BOTTOM_CENTER);
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username");
         usernameField.setStyle("-fx-border-color: #000000; -fx-border-radius: 5; -fx-background-radius: 5;");
@@ -164,9 +163,9 @@ public class LoginPage extends Application {
         StackPane stackPane = new StackPane(vbox);
         stackPane.setStyle("-fx-background-color: #f0f4f8;");
         stackPane.setAlignment(Pos.CENTER);
-        stackPane.setPrefSize(400, 300);
+        stackPane.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
-        Scene scene = new Scene(stackPane, 400, 300);
+        Scene scene = new Scene(stackPane);
         primaryStage.setTitle("Login Page");
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);

@@ -42,7 +42,8 @@ public class update_tables {
             PreparedStatement pstmt = conn.prepareStatement(query);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()){
-                return true;
+                int count = rs.getInt(1);
+                return (count > 0);
             }
         }
         catch (SQLException e) {
