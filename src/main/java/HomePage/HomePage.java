@@ -41,12 +41,15 @@ public class HomePage extends Application {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-    private VBox createTabContent(String contentText) {
+    private VBox createTabContent(String... contentLines) {
         VBox tabContent = new VBox();
-        tabContent.setStyle("-fx-alignment: center; -fx-padding: 20;");
-        Label contentLabel = new Label(contentText);
-        contentLabel.setStyle("-fx-font-size: 18; -fx-text-alignment: center;");
-        tabContent.getChildren().add(contentLabel);
+        tabContent.setStyle("-fx-alignment: center; -fx-padding: 20; -fx-spacing: 10;");
+
+        for (String line : contentLines) {
+            Label contentLabel = new Label(line);
+            contentLabel.setStyle("-fx-font-size: 20; -fx-text-alignment: center;");
+            tabContent.getChildren().add(contentLabel);
+        }
         return tabContent;
     }
 
@@ -150,11 +153,26 @@ public class HomePage extends Application {
         tabPane.setStyle("-fx-padding: 10;");
         //--------------------------------------------------------------------------------------------------------------
         Tab homeTab = new Tab("Home");
-        homeTab.setContent(createTabContent("Home: Welcome to the Smart Street Light System!"));
+        homeTab.setContent(createTabContent("The Smart Street Light Management System simplifies streetlight maintenance by ",
+                " allowing city administrators to report and track issues ",
+                " via a user-friendly desktop application. ", "",
+                "It promotes efficient energy use, timely repairs, and safer, well-lit cities, ",
+                "contributing to smarter and more sustainable urban living."
+        ));
         setTabStyle(homeTab);
         //--------------------------------------------------------------------------------------------------------------
+
         Tab contactTab = new Tab("Contact Us");
-        contactTab.setContent(createTabContent("Contact Us: Reach out to us anytime!"));
+        contactTab.setContent(createTabContent(
+                "Project Lead: Saumya Srivastava",
+                "Email ID: saumya.srivastava@gmail.com","",
+                "Software Developer: Gayathri",
+                "Email ID: gayathri@gmail.com","",
+                "Database Administrator: Bhavika Pawar",
+                "Email ID: bhavika.pawar@gmail.com","",
+                "Client Manager: Jivaj Arora",
+                "Email id: jivaj.arora@gmail.com "
+        ));
         setTabStyle(contactTab);
         //--------------------------------------------------------------------------------------------------------------
         Tab profileTab = new Tab("Profile");
@@ -290,8 +308,10 @@ public class HomePage extends Application {
         setTabStyle(maintenanceTab);
 
         Label maintenanceLabel = new Label("Select a table to view details:");
+        maintenanceLabel.setStyle("-fx-font-size: 18;");
         tableDropdown = new ComboBox<>();
         selectedTableLabel = new Label("Table Details: No table selected.");
+        selectedTableLabel.setStyle("-fx-font-size: 18;");
 
         Button refreshButton = new Button("Refresh");
         refreshButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
